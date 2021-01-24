@@ -1,6 +1,9 @@
 /* Global ====================== */
 :root {
   --dark-blue: #363f5f;
+  --green: #49aa26;
+  --light-green: #3dd705;
+  --red: #e92929;
 }
 
 * {
@@ -9,9 +12,26 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 93.75%; /* 15px */
+}
+
 body {
   background: #f0f2f5;
   font-family: Poppins, sans-serif;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }
 
 .container {
@@ -26,6 +46,57 @@ h2 {
   color: var(--dark-blue);
 
   font-weight: normal; /* 400 */
+}
+
+/* Links and Buttons ====================== */
+a {
+  color: var(--green);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--light-green);
+}
+
+button {
+  width: 100%;
+  height: 50px;
+  cursor: pointer;
+
+  border: none;
+  color: #fff;
+  background: var(--green);
+
+  padding: 0;
+
+  border-radius: 0.25rem;
+}
+
+button:hover {
+  background: var(--light-green);
+}
+
+.button.new {
+  display: inline-block;
+  margin-bottom: 0.8rem;
+}
+
+.button.cancel {
+  color: var(--red);
+  border: 2px var(--red) solid;
+  border-radius: 0.25rem;
+
+  height: 50px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  opacity: 0.6;
+}
+
+.button.cancel:hover {
+  opacity: 1;
 }
 
 /* Header ====================== */
@@ -63,6 +134,13 @@ header {
 .card h3 {
   font-weight: normal;
   font-size: 1rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card h3 image {
 }
 
 .card p {
@@ -72,21 +150,33 @@ header {
 }
 
 .card.total {
-  background: #49aa26;
+  background: var(--green);
   color: #fff;
 }
 
 /* Table ====================== */
+#transaction {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+}
 
 #data-table {
   width: 100%;
   border-spacing: 0 0.5rem;
   color: #969cb3;
+
+  overflow-x: auto; /* Sempre que um elemente transbordar */
 }
 
 table thead tr th:first-child,
 table tbody tr td:first-child {
   border-radius: 0.25rem 0 0 0.25rem;
+}
+
+table thead tr th:last-child,
+table tbody tr td:last-child {
+  border-radius: 0 0.25rem 0.25rem 0;
 }
 
 table thead th {
@@ -122,7 +212,78 @@ td.income {
 }
 
 td.expense {
-  color: #e92929;
+  color: var(--red);
+}
+
+/* Modal ====================== */
+.modal-overlay {
+  width: 100%;
+  height: 100%;
+
+  background-color: rgba(0, 0, 0, 0.7);
+
+  position: fixed;
+  top: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 0;
+  visibility: hidden;
+
+  z-index: 999;
+}
+
+/* Modal ====================== */
+
+.modal-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal {
+  background: #f0f2f5;
+  padding: 2.4rem;
+
+  position: relative;
+}
+
+/* Form ====================== */
+.form {
+  max-width: 500px;
+}
+
+.form h2 {
+  margin-top: 0;
+}
+
+.input-group {
+  margin-top: 0.8rem;
+}
+
+.input-group small {
+  opacity: 0.4;
+}
+
+.input-group.actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input-group.actions .button,
+.input-group.actions button {
+  width: 48%;
+}
+
+input {
+  border: none;
+  border-radius: 0.2rem;
+
+  padding: 0.8rem;
+
+  width: 100%;
 }
 
 /* Footer ====================== */
@@ -131,4 +292,16 @@ footer {
   padding: 4rem 0 2rem;
   color: var(--dark-blue);
   opacity: 0.6;
+}
+
+/* Responsive ====================== */
+@media (min-width: 800px) {
+  html {
+    font-size: 87.5%; /* 14px */
+  }
+  #balance {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* fr fração */
+    gap: 2rem;
+  }
 }
