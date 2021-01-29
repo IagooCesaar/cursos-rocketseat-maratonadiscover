@@ -1,6 +1,6 @@
 const Utils = {
   formatCurrency(value) {
-    const signal = Number(value) > 0 ? "" : "-";
+    const signal = Number(value) >= 0 ? "" : "-";
     /* Substituir todos os caracteres não numéricos com Regex */
     value = String(value).replace(/\D/g, "");
     value = Number(value) / 100;
@@ -30,6 +30,55 @@ const Modal = {
   close() {
     const form = document.querySelector(".modal-overlay");
     form.classList.remove("active");
+  },
+};
+
+const StorageTransactions = {
+  storageKey: "dev.finances:transactions",
+  get() {
+    return (
+      JSON.parse(localStorage.getItem(StorageTransactions.storageKey)) || []
+    );
+  },
+  set(transactions) {
+    localStorage.setItem(
+      StorageTransactions.storageKey,
+      JSON.stringify(transactions)
+    );
+  },
+};
+
+const Transaction = {
+  all: StorageTransactions.get(),
+
+  add(transaction) {
+    Transaction.all.push(transaction);
+    App.reload();
+  },
+  remove(index) {
+    Transaction.all.splice(index, 1);
+    App.reload();
+  },
+  incomes() {
+    let income = 0;
+    Transaction.all.forEach((transaction) => {
+      if (transaction.amount > 0) {
+        income += transaction.amount;
+      }
+    });
+    return income;
+  },
+  expenses() {
+    let expense = 0;
+    Transaction.all.forEach((transaction) => {
+      if (transaction.amount < 0) {
+        expense += transaction.amount;
+      }
+    });
+    return expense;
+  },
+  total() {
+    return Transaction.incomes() + Transaction.expenses();
   },
 };
 
@@ -83,50 +132,6 @@ const Form = {
     } catch (error) {
       alert(error.message);
     }
-  },
-};
-
-const Storage = {
-  key: "dev.finances:transactions",
-  get() {
-    return JSON.parse(localStorage.getItem(key)) || [];
-  },
-  set(transactions) {
-    localStorage.setItem(key, JSON.stringify(transactions));
-  },
-};
-
-const Transaction = {
-  all: Storage.get(),
-
-  add(transaction) {
-    Transaction.all.push(transaction);
-    App.reload();
-  },
-  remove(index) {
-    Transaction.all.splice(index, 1);
-    App.reload();
-  },
-  incomes() {
-    let income = 0;
-    Transaction.all.forEach((transaction) => {
-      if (transaction.amount > 0) {
-        income += transaction.amount;
-      }
-    });
-    return income;
-  },
-  expenses() {
-    let expense = 0;
-    Transaction.all.forEach((transaction) => {
-      if (transaction.amount < 0) {
-        expense += transaction.amount;
-      }
-    });
-    return expense;
-  },
-  total() {
-    return Transaction.incomes() + Transaction.expenses();
   },
 };
 
@@ -184,7 +189,7 @@ const App = {
     DOM.updateBalance();
     Form.clearFields();
 
-    Storage.set(Transaction.all);
+    StorageTransactions.set(Transaction.all);
   },
   reload() {
     DOM.clearTransactions();
