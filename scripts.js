@@ -12,9 +12,9 @@ const Utils = {
 
     return `${signal} ${value}`;
   },
-  formatAmout(value) {
+  formatAmount(value) {
     value = Number(value) * 100;
-    return value;
+    return Math.round(value);
   },
   formatDate(date) {
     const splittedDate = date.split("-");
@@ -105,7 +105,7 @@ const Form = {
   },
   formatValues() {
     let { description, amount, date } = Form.getValues();
-    amount = Utils.formatAmout(amount);
+    amount = Utils.formatAmount(amount);
     date = Utils.formatDate(date);
     description = description.trim();
     return {
