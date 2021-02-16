@@ -267,14 +267,26 @@ td.expense {
 }
 
 .input-group.actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 1rem;
+
   justify-content: space-between;
+  align-items: center;
+}
+
+.modal .action {
+  margin-top: 0.8rem;
+  display: flex;
+  justify-content: center;
   align-items: center;
 }
 
 .input-group.actions .button,
 .input-group.actions button {
-  width: 48%;
+  /* width: 48%; */
+  /* flex: 1; */
 }
 
 input {

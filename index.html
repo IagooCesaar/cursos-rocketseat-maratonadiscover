@@ -75,7 +75,7 @@
     <p>dev.finance$</p>
   </footer>
 
-  <div class="modal-overlay">
+  <div class="modal-overlay" id="transactions-form">
     <div class="modal">
       <div class="form">
         <h2>Nova transação</h2>
@@ -155,6 +155,33 @@
 
         </form>
       </div>      
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="login-form">
+    <div class="modal">
+      <div class="form">
+        <h2>Login</h2>
+        <form action="" onsubmit="LoginForm.submit(event)">        
+          <div class="input-group">
+            <label 
+              class="sr-only"
+              for="user"
+            >
+              Informe o seu usuário
+            </label>
+            <input 
+              type="text" 
+              id="user"
+              name="user"
+              placeholder="Informe o seu usuário"
+            />
+          </div>
+          <div class="action">           
+            <button>Salvar</button>
+          </div>
+      </form>
+      </div>
     </div>
   </div>
 

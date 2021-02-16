@@ -26,10 +26,57 @@ const Utils = {
   },
 };
 
+const StorageTransactions = {
+  storageKey: "dev.finances:transactions",
+  get() {
+    return (
+      JSON.parse(localStorage.getItem(StorageTransactions.storageKey)) || []
+    );
+  },
+  set(transactions) {
+    localStorage.setItem(
+      StorageTransactions.storageKey,
+      JSON.stringify(transactions)
+    );
+  },
+};
+
+const LoginModal = {
+  form: document.querySelector("#login-form"),
+  open() {
+    LoginModal.form.classList.add("active");
+  },
+  close() {
+    LoginModal.form.classList.remove("active");
+  },
+};
+
+const LoginForm = {
+  user: document.querySelector("input#user"),
+
+  getValues() {
+    return {
+      user: LoginForm.user.value,
+    };
+  },
+
+  cancel() {
+    LoginModal.close();
+  },
+  submit(event) {
+    event.preventDefault();
+    console.log("aqui...");
+    const { user } = LoginForm.getValues();
+    App.user = user;
+
+    App.init();
+  },
+};
+
 const Modal = {
+  form: document.querySelector("#transactions-form"),
   open(transactionID = "") {
-    const form = document.querySelector(".modal-overlay");
-    form.classList.add("active");
+    Modal.form.classList.add("active");
 
     if (transactionID) {
       transactionID = Number(transactionID);
@@ -45,23 +92,7 @@ const Modal = {
     }
   },
   close() {
-    const form = document.querySelector(".modal-overlay");
-    form.classList.remove("active");
-  },
-};
-
-const StorageTransactions = {
-  storageKey: "dev.finances:transactions",
-  get() {
-    return (
-      JSON.parse(localStorage.getItem(StorageTransactions.storageKey)) || []
-    );
-  },
-  set(transactions) {
-    localStorage.setItem(
-      StorageTransactions.storageKey,
-      JSON.stringify(transactions)
-    );
+    Modal.form.classList.remove("active");
   },
 };
 
@@ -237,15 +268,21 @@ const DOM = {
 };
 
 const App = {
+  user: "",
   init() {
     // Transaction.all.forEach((transaction, index) =>
     //   DOM.addTransaction(transaction, index)
     // );
-    Transaction.all.forEach(DOM.addTransaction);
-    DOM.updateBalance();
-    Form.clearFields();
+    LoginModal.close();
+    if (App.user) {
+      Transaction.all.forEach(DOM.addTransaction);
+      DOM.updateBalance();
+      Form.clearFields();
 
-    StorageTransactions.set(Transaction.all);
+      StorageTransactions.set(Transaction.all);
+    } else {
+      LoginModal.open();
+    }
   },
   reload() {
     DOM.clearTransactions();
