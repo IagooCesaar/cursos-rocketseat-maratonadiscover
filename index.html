@@ -80,6 +80,20 @@
       <div class="form">
         <h2>Nova transação</h2>
         <form action="" onsubmit="Form.submit(event)">
+          <div class="input-group" hidden>
+            <label 
+              class="sr-only"
+              for="description"
+            >
+              Identificador
+            </label>
+            <input 
+              type="text" 
+              id="id"
+              name="id"
+              placeholder="Identificador"
+            />
+          </div>
           <div class="input-group">
             <label 
               class="sr-only"
@@ -130,7 +144,7 @@
             <a
               href="#" 
               class="button cancel"
-              onclick="Modal.close()"
+              onclick="Form.cancel()"
             >
               Cancelar
             </a>
