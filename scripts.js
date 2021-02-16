@@ -16,16 +16,33 @@ const Utils = {
     value = Number(value) * 100;
     return Math.round(value);
   },
-  formatDate(date) {
+  formatDateToStringDate(date) {
     const splittedDate = date.split("-");
     return splittedDate[2] + "/" + splittedDate[1] + "/" + splittedDate[0];
+  },
+  formatStringDateToDate(stringDate) {
+    const splittedDate = stringDate.split("/");
+    return `${splittedDate[2]}-${splittedDate[1]}-${splittedDate[0]}`;
   },
 };
 
 const Modal = {
-  open() {
+  open(transactionID = "") {
     const form = document.querySelector(".modal-overlay");
     form.classList.add("active");
+
+    if (transactionID) {
+      transactionID = Number(transactionID);
+      const [transaction] = Transaction.all.filter((transaction) => {
+        return transaction.id == transactionID;
+      });
+      Form.setValues(
+        transaction.description,
+        transaction.amount / 100,
+        Utils.formatStringDateToDate(transaction.date),
+        transaction.id
+      );
+    }
   },
   close() {
     const form = document.querySelector(".modal-overlay");
@@ -52,13 +69,18 @@ const Transaction = {
   all: StorageTransactions.get(),
 
   add(transaction) {
-    Transaction.all.push(transaction);
+    const index = Transaction.all.findIndex((item, index) => {
+      return item.id == transaction.id;
+    });
+    if (index > -1) {
+      Transaction.all.splice(index, 1, transaction);
+    } else {
+      Transaction.all.push(transaction);
+    }
     App.reload();
   },
   remove(transactionID) {
-    // console.log("attempt to remove id", transactionID);
     const index = Transaction.all.findIndex((transaction, index) => {
-      // console.log("findIndex", transaction);
       return transaction.id == transactionID;
     });
 
@@ -92,14 +114,23 @@ const Form = {
   description: document.querySelector("input#description"),
   amount: document.querySelector("input#amount"),
   date: document.querySelector("input#date"),
+  id: document.querySelector("input#id"),
 
   getValues() {
     return {
+      id: Form.id.value,
       description: Form.description.value,
       amount: Form.amount.value,
       date: Form.date.value,
     };
   },
+  setValues(description, amount, date, id) {
+    Form.description.value = description;
+    Form.amount.value = amount;
+    Form.date.value = date;
+    Form.id.value = id;
+  },
+
   validateFields() {
     const { description, amount, date } = Form.getValues();
     if (
@@ -111,11 +142,15 @@ const Form = {
     }
   },
   formatValues() {
-    let { description, amount, date } = Form.getValues();
+    let { id, description, amount, date } = Form.getValues();
     amount = Utils.formatAmount(amount);
-    date = Utils.formatDate(date);
+    date = Utils.formatDateToStringDate(date);
     description = description.trim();
-    let id = new Date().getTime();
+    if (id) {
+      id = Number(id);
+    } else {
+      id = Number(new Date().getTime());
+    }
     return {
       id,
       description,
@@ -124,9 +159,7 @@ const Form = {
     };
   },
   clearFields() {
-    Form.description.value = "";
-    Form.amount.value = "";
-    Form.date.value = new Date().toISOString().substr(0, 10);
+    Form.setValues("", "", new Date().toISOString().substr(0, 10), "");
 
     return true;
   },
@@ -141,6 +174,10 @@ const Form = {
     } catch (error) {
       alert(error.message);
     }
+  },
+  cancel() {
+    Form.clearFields();
+    Modal.close();
   },
 };
 
@@ -167,9 +204,17 @@ const DOM = {
       
       <td class="date">${transaction.date}</td>
 
-      <td><img onClick="Transaction.remove(${
+      <td>
+      
+      <img onClick="Modal.open(${
         transaction.id
-      })" src="./assets/minus.svg" alt="Remover transação"></td>
+      })" src="./assets/edit.svg" alt="Editar transação" title="Editar transação">
+
+      <img onClick="Transaction.remove(${
+        transaction.id
+      })" src="./assets/minus.svg" alt="Remover transação" title="Remover transação">
+      
+      </td>
     `;
     return html;
   },
