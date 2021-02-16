@@ -26,18 +26,27 @@ const Utils = {
   },
 };
 
+const User = {
+  login: "",
+  name: "",
+};
+
 const StorageTransactions = {
   storageKey: "dev.finances:transactions",
+
   get() {
-    return (
-      JSON.parse(localStorage.getItem(StorageTransactions.storageKey)) || []
-    );
+    console.log("get data");
+    const data =
+      JSON.parse(localStorage.getItem(StorageTransactions.storageKey)) || {};
+    console.log("data", data);
+
+    return data[User.login] || [];
   },
   set(transactions) {
-    localStorage.setItem(
-      StorageTransactions.storageKey,
-      JSON.stringify(transactions)
-    );
+    const data =
+      JSON.parse(localStorage.getItem(StorageTransactions.storageKey)) || {};
+    data[User.login] = transactions;
+    localStorage.setItem(StorageTransactions.storageKey, JSON.stringify(data));
   },
 };
 
@@ -53,11 +62,20 @@ const LoginModal = {
 
 const LoginForm = {
   user: document.querySelector("input#user"),
+  name: document.querySelector("input#name"),
 
   getValues() {
     return {
-      user: LoginForm.user.value,
+      user: String(LoginForm.user.value).toLowerCase(),
+      name: LoginForm.name.value,
     };
+  },
+
+  validateFields() {
+    const { user, name } = LoginForm.getValues();
+    if (user.trim() === "" || name.trim() === "") {
+      throw new Error("Você deverá informar seu usuário e nome para acessar");
+    }
   },
 
   cancel() {
@@ -65,11 +83,21 @@ const LoginForm = {
   },
   submit(event) {
     event.preventDefault();
-    console.log("aqui...");
-    const { user } = LoginForm.getValues();
-    App.user = user;
 
-    App.init();
+    try {
+      LoginForm.validateFields();
+
+      const { user, name } = LoginForm.getValues();
+      User.login = user;
+      User.name = name;
+
+      DOM.changeUserName();
+      Transaction.all = StorageTransactions.get();
+
+      App.init();
+    } catch (error) {
+      alert(error.message);
+    }
   },
 };
 
@@ -97,7 +125,7 @@ const Modal = {
 };
 
 const Transaction = {
-  all: StorageTransactions.get(),
+  all: [],
 
   add(transaction) {
     const index = Transaction.all.findIndex((item, index) => {
@@ -214,6 +242,7 @@ const Form = {
 
 const DOM = {
   transactionsContainer: document.querySelector("#data-table tbody"),
+  presentationUser: document.querySelector("footer #presentation-user"),
 
   addTransaction(transaction, index) {
     const tr = document.createElement("tr");
@@ -265,16 +294,16 @@ const DOM = {
   clearTransactions() {
     DOM.transactionsContainer.innerHTML = "";
   },
+
+  changeUserName() {
+    DOM.presentationUser.innerText = `Autenticado como ${User.name}`;
+  },
 };
 
 const App = {
-  user: "",
   init() {
-    // Transaction.all.forEach((transaction, index) =>
-    //   DOM.addTransaction(transaction, index)
-    // );
     LoginModal.close();
-    if (App.user) {
+    if (User.login) {
       Transaction.all.forEach(DOM.addTransaction);
       DOM.updateBalance();
       Form.clearFields();
