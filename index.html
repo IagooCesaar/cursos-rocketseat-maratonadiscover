@@ -17,6 +17,7 @@
   </header>
 
   <main class="container">
+
     <section id="balance">
       <h2 class="sr-only">Balanço</h2>
 
@@ -73,6 +74,7 @@
 
   <footer>
     <p>dev.finance$</p>
+    <p id="presentation-user"></p>
   </footer>
 
   <div class="modal-overlay" id="transactions-form">
@@ -150,9 +152,6 @@
             </a>
             <button>Salvar</button>
           </div>
-
-          
-
         </form>
       </div>      
     </div>
@@ -177,8 +176,22 @@
               placeholder="Informe o seu usuário"
             />
           </div>
+          <div class="input-group">
+            <label 
+              class="sr-only"
+              for="name"
+            >
+              Informe o seu nome
+            </label>
+            <input 
+              type="text" 
+              id="name"
+              name="name"
+              placeholder="Informe o seu nome"
+            />
+          </div>
           <div class="action">           
-            <button>Salvar</button>
+            <button>Entrar</button>
           </div>
       </form>
       </div>
