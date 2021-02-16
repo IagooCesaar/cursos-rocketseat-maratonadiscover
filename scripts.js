@@ -55,7 +55,13 @@ const Transaction = {
     Transaction.all.push(transaction);
     App.reload();
   },
-  remove(index) {
+  remove(transactionID) {
+    // console.log("attempt to remove id", transactionID);
+    const index = Transaction.all.findIndex((transaction, index) => {
+      // console.log("findIndex", transaction);
+      return transaction.id == transactionID;
+    });
+
     Transaction.all.splice(index, 1);
     App.reload();
   },
@@ -86,6 +92,7 @@ const Form = {
   description: document.querySelector("input#description"),
   amount: document.querySelector("input#amount"),
   date: document.querySelector("input#date"),
+
   getValues() {
     return {
       description: Form.description.value,
@@ -108,7 +115,9 @@ const Form = {
     amount = Utils.formatAmount(amount);
     date = Utils.formatDate(date);
     description = description.trim();
+    let id = new Date().getTime();
     return {
+      id,
       description,
       amount,
       date,
@@ -158,7 +167,9 @@ const DOM = {
       
       <td class="date">${transaction.date}</td>
 
-      <td><img onClick="Transaction.remove(${index})" src="./assets/minus.svg" alt="Remover transação"></td>
+      <td><img onClick="Transaction.remove(${
+        transaction.id
+      })" src="./assets/minus.svg" alt="Remover transação"></td>
     `;
     return html;
   },
