@@ -304,7 +304,23 @@ const App = {
   init() {
     LoginModal.close();
     if (User.login) {
-      Transaction.all.forEach(DOM.addTransaction);
+      Transaction.all
+        .sort((a, b) => {
+          const aDate = new Date(Utils.formatStringDateToDate(a.date));
+          const bDate = new Date(Utils.formatStringDateToDate(b.date));
+          if (aDate > bDate) {
+            return 1;
+          } else if (aDate < bDate) {
+            return -1;
+          } else if (a.amount < b.amount) {
+            return 1;
+          } else if (a.amount > b.amount) {
+            return -1;
+          } else {
+            return 0;
+          }
+        })
+        .forEach(DOM.addTransaction);
       DOM.updateBalance();
       Form.clearFields();
 
